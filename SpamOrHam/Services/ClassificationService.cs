@@ -16,7 +16,7 @@ namespace SpamOrHam.Services
             this._scopeFactory = scopeFactory;
         }
 
-        public async Task<Classification> Classify(ClassificationRequest request)
+        public async Task<ClassificationResponse> Classify(ClassificationRequest request)
         {
             if (_dataset is null)
             {
@@ -74,11 +74,20 @@ namespace SpamOrHam.Services
 
             foreach (var point in requestList)
             {
-                probabilityForHam *= Math.Pow(point.HamProbability, point.Count);
-                probabilityForSpam *= Math.Pow(point.SpamProbability, point.Count);
+                if (point.Count > 0)
+                {
+                    probabilityForHam *= Math.Pow(point.HamProbability, point.Count);
+                    probabilityForSpam *= Math.Pow(point.SpamProbability, point.Count);
+                }
             }
 
-            return probabilityForHam > probabilityForSpam ? Classification.Ham : Classification.Spam;
+            return new ClassificationResponse
+            {
+                Classification = probabilityForHam > probabilityForSpam ? Classification.Ham : Classification.Spam,
+                DataPoints = requestList,
+                ProbabilityForHam = probabilityForHam,
+                ProbabilityForSpam = probabilityForSpam
+            };
         }
     }
 }
