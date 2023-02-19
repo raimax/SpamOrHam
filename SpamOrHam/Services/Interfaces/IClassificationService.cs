@@ -5,6 +5,6 @@ namespace SpamOrHam.Services.Interfaces
 {
     public interface IClassificationService
     {
-        public Classification Classify(ClassificationRequest request);
+        public Task<Classification> Classify(ClassificationRequest request);
     }
 }

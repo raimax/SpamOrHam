@@ -1,14 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using SpamOrHam.Data;
 using SpamOrHam.Services;
 using SpamOrHam.Services.Interfaces;
 using SpamOrHam.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(x =>
@@ -20,13 +18,21 @@ builder.Services.AddCors(x =>
 });
 builder.Services.AddDbContext<DatabaseContext>(x =>
 {
-    x.UseSqlServer(builder.Configuration["SqlConnection"]);
+    x.UseSqlServer(builder.Configuration.GetConnectionString("sqlConnection"));
 });
 builder.Services.AddSingleton<IClassificationService, ClassificationService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<DatabaseContext>();
+    await context.Database.MigrateAsync();
+    await Seed.SeedDataset(context);
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

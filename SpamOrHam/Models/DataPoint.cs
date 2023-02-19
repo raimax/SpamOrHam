@@ -4,12 +4,15 @@ namespace SpamOrHam.Models
 {
     public class DataPoint
     {
+        public int Id { get; set; }
         public string Word { get; set; }
         public double TimesOccurredInHam { get; set; }
         public double TimesOccurredInSpam { get; set; }
         public double HamProbability { get; set; }
         public double SpamProbability { get; set; }
         public string LastRecordContent { get; set; }
+        public int DatasetId { get; set; }
+        public Dataset Dataset { get; set; }
 
 
         public void AddToCount(Classification classification)
