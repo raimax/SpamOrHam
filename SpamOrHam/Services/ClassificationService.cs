@@ -74,11 +74,8 @@ namespace SpamOrHam.Services
 
             foreach (var point in requestList)
             {
-                if (point.Count > 0)
-                {
-                    probabilityForHam *= Math.Pow(point.HamProbability, point.Count);
-                    probabilityForSpam *= Math.Pow(point.SpamProbability, point.Count);
-                }
+                probabilityForHam *= Math.Pow(point.HamProbability, point.Count);
+                probabilityForSpam *= Math.Pow(point.SpamProbability, point.Count);
             }
 
             return new ClassificationResponse
