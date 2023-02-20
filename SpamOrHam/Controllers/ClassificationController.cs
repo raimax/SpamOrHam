@@ -20,15 +20,15 @@ namespace SpamOrHam.Controllers
         }
 
         [HttpPost("classify")]
-        public async Task<IActionResult> Classify([FromBody] ClassificationRequest request)
+        public async Task<IActionResult> Classify([FromBody] ClassificationRequest request, CancellationToken ct)
         {
-            var result = await _classificationService.Classify(request);
+            var result = await _classificationService.Classify(request, ct);
 
             return Ok(result);
         }
 
-        [HttpGet("dataset")]
-        public async Task<IActionResult> GetDataset()
+        [HttpGet("model")]
+        public async Task<IActionResult> GetDataset(CancellationToken ct)
         {
             var dataset = await _context.Datasets.Select(d => new DatasetResponse
             {
@@ -39,7 +39,7 @@ namespace SpamOrHam.Controllers
                 PriorSpamProbability = d.PriorSpamProbability,
                 DataPointCount = _context.DataPoints.Where(x => x.DatasetId == d.Id).Count()
             })
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(ct);
 
             return Ok(dataset);
         }

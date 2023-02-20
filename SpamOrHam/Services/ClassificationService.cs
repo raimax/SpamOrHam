@@ -16,7 +16,7 @@ namespace SpamOrHam.Services
             this._scopeFactory = scopeFactory;
         }
 
-        public async Task<ClassificationResponse> Classify(ClassificationRequest request)
+        public async Task<ClassificationResponse> Classify(ClassificationRequest request, CancellationToken ct)
         {
             if (_dataset is null)
             {
@@ -27,7 +27,7 @@ namespace SpamOrHam.Services
                     _dataset = await context.Datasets
                         .Include(x => x.DataPoints)
                         .AsNoTracking()
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefaultAsync(ct);
 
                     await context.DisposeAsync();
                 }
